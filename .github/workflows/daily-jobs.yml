@@ -1,0 +1,39 @@
+name: daily-fresh-jobs
+
+# 10:00 UTC == 11:00 Irish summer time (IST, UTC+1).
+# After the October clock change Ireland is UTC+0; switch to "0 11 * * *" then
+# if you want exactly 11:00 year-round. GitHub may delay scheduled runs slightly.
+on:
+  schedule:
+    - cron: "0 10 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Run monitor
+        env:
+          ADZUNA_APP_ID:  ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+          # APIFY_TOKEN:   ${{ secrets.APIFY_TOKEN }}   # uncomment when Apify layer is added
+        run: python pipeline.py
+      - name: Commit results
+        run: |
+          git config user.name  "job-bot"
+          git config user.email "job-bot@users.noreply.github.com"
+          git add fresh_jobs.csv digest.md state.json
+          if git diff --staged --quiet; then
+            echo "No new jobs today."
+          else
+            git commit -m "fresh jobs $(date -u +%Y-%m-%d)"
+            git push
+          fi
