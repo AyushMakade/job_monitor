@@ -53,6 +53,7 @@ def write_digest(records, now):
     core_near = [r for r in records if r["stack_relevance"] == "Core"
                  and r["accessibility"] in ("Entry / graduate", "Near (~1-3 yr)")]
     other_core = [r for r in records if r["stack_relevance"] == "Core" and r not in core_near]
+    review = [r for r in records if r["stack_relevance"] == "Review"]
     def line(r):
         sal = f" | EUR {r['salary_min']}-{r['salary_max']}" if r["salary_min"] else ""
         visa = f" | ⚠ {r['visa_flag']}" if r["visa_flag"] else ""
@@ -65,5 +66,7 @@ def write_digest(records, now):
     lines += [line(r) for r in sorted(core_near, key=lambda x: x["created_utc"], reverse=True)] or ["_none_"]
     lines.append(f"\n## Other Core roles ({len(other_core)})\n")
     lines += [line(r) for r in sorted(other_core, key=lambda x: x["created_utc"], reverse=True)] or ["_none_"]
+    lines.append(f"\n## Unclassified — quick review ({len(review)})\n")
+    lines += [line(r) for r in sorted(review, key=lambda x: x["created_utc"], reverse=True)] or ["_none_"]
     with open(config.DIGEST_MD, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
