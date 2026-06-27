@@ -6,13 +6,16 @@
 ENABLED_SOURCES = ["jooble"]   # backbone. (Adzuna removed: it has no Ireland API.)
 
 # ---- freshness ----
-LOOKBACK_HOURS = 24          # first-run / fallback window; steady state uses last-run
+LOOKBACK_HOURS = 48          # steady-state window: each daily run looks back this many hours
+                             # (wider than 24h so a delayed/skipped run never leaves a gap;
+                             #  de-duplication makes the overlap free)
 
 
 # ---- Jooble (aggregator backbone — covers Ireland) ----
 JOOBLE_LOCATION = "Ireland"
 JOOBLE_RESULTS_PER_PAGE = 50
-JOOBLE_MAX_PAGES = 5
+JOOBLE_MAX_PAGES = 2              # pages per daily run (sips the 500-request free budget)
+JOOBLE_FIRST_RUN_MAX_PAGES = 10  # one-time deeper pull to seed a fuller baseline
 
 # ---- Adzuna (UNUSED: no Ireland endpoint; kept for reference) ----
 ADZUNA_COUNTRY = "ie"

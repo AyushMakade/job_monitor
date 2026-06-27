@@ -1,10 +1,9 @@
-"""Jooble source module: aggregator that DOES cover Ireland (unlike Adzuna).
-Free REST key from https://jooble.org/api/about . Official endpoint:
-POST https://jooble.org/api/{key}  with JSON body {keywords, location, page,...}.
+"""Jooble source module: aggregator that covers Ireland.
+Free REST key from https://jooble.org/api/about . POST https://jooble.org/api/{key}.
 
-Efficiency: all target terms are sent as one comma-joined (OR) query per page,
-so a daily run costs only a handful of API calls — kind to the free tier.
-Fails loudly on a bad key; prints raw vs in-window counts."""
+cutoff=None  -> first run: take every ad returned, pull FIRST_RUN pages.
+cutoff=set   -> daily run: keep only ads updated after cutoff, pull MAX pages.
+All target terms go out as ONE comma-joined (OR) query per page to spare quota."""
 import os, time, requests
 from datetime import datetime, timezone
 import config
@@ -13,7 +12,6 @@ from sources.base import record, dedup_key, iso
 API = "https://jooble.org/api/{key}"
 
 def _updated(s):
-    # Jooble: "2026-06-26T12:55:35.3870000" (UTC, no tz) -> first 19 chars
     try:
         return datetime.strptime(s[:19], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
     except Exception:
@@ -24,9 +22,12 @@ def fetch(cutoff, now):
     if not key:
         raise RuntimeError("JOOBLE_API_KEY not set")
 
-    keywords = ", ".join(config.SEARCH_TERMS)   # comma = OR in Jooble
+    first_run = cutoff is None
+    pages = config.JOOBLE_FIRST_RUN_MAX_PAGES if first_run else config.JOOBLE_MAX_PAGES
+    keywords = ", ".join(config.SEARCH_TERMS)
     out, raw_total = [], 0
-    for page in range(1, config.JOOBLE_MAX_PAGES + 1):
+
+    for page in range(1, pages + 1):
         body = {"keywords": keywords, "location": config.JOOBLE_LOCATION,
                 "page": str(page), "ResultOnPage": config.JOOBLE_RESULTS_PER_PAGE}
         try:
@@ -47,21 +48,23 @@ def fetch(cutoff, now):
             break
         for j in jobs:
             upd = _updated(j.get("updated", ""))
-            if upd is None or upd <= cutoff:
+            if not first_run and (upd is None or upd <= cutoff):
                 continue
             loc = j.get("location", "") or ""
             title = (j.get("title") or "").replace("\n", " ").strip()
             co = j.get("company", "") or ""
             out.append(record(
                 source="jooble", source_id=str(j.get("id", "")),
-                dedup_key=dedup_key(co, title, loc), created_utc=iso(upd),
-                age_hours=round((now - upd).total_seconds() / 3600, 1),
+                dedup_key=dedup_key(co, title, loc),
+                created_utc=iso(upd) if upd else "",
+                age_hours=round((now - upd).total_seconds() / 3600, 1) if upd else "",
                 title=title, company=co, location=loc,
-                is_dublin="dublin" in loc.lower(),
-                contract_type=j.get("type", ""),
+                is_dublin="dublin" in loc.lower(), contract_type=j.get("type", ""),
                 description=(j.get("snippet") or "").replace("\n", " ").strip(),
                 url=j.get("link", ""), query_term="jooble", fetched_at_utc=iso(now),
             ))
         time.sleep(1.0)
-    print(f"  jooble: API returned {raw_total} ad(s) total, {len(out)} inside the freshness window")
+
+    mode = "FIRST RUN (all)" if first_run else f"window {config.LOOKBACK_HOURS}h"
+    print(f"  jooble [{mode}]: API returned {raw_total} ad(s), kept {len(out)}")
     return out
