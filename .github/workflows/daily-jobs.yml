@@ -22,8 +22,7 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Run monitor
         env:
-          ADZUNA_APP_ID:  ${{ secrets.ADZUNA_APP_ID }}
-          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+          JOOBLE_API_KEY: ${{ secrets.JOOBLE_API_KEY }}
           # APIFY_TOKEN:   ${{ secrets.APIFY_TOKEN }}   # uncomment when Apify layer is added
         run: python pipeline.py
       - name: Commit results

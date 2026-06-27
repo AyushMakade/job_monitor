@@ -3,12 +3,18 @@
 # Which sources run. Only names with a built module in sources/ may appear here.
 # Roadmap (added one proven layer at a time): greenhouse, lever, ashby,
 # apify_linkedin, apify_indeed, and (off-by-default toggles) jooble, reed.
-ENABLED_SOURCES = ["adzuna"]
+ENABLED_SOURCES = ["jooble"]   # backbone. (Adzuna removed: it has no Ireland API.)
 
 # ---- freshness ----
 LOOKBACK_HOURS = 24          # first-run / fallback window; steady state uses last-run
 
-# ---- Adzuna ----
+
+# ---- Jooble (aggregator backbone — covers Ireland) ----
+JOOBLE_LOCATION = "Ireland"
+JOOBLE_RESULTS_PER_PAGE = 50
+JOOBLE_MAX_PAGES = 5
+
+# ---- Adzuna (UNUSED: no Ireland endpoint; kept for reference) ----
 ADZUNA_COUNTRY = "ie"
 ADZUNA_RESULTS_PER_PAGE = 50
 ADZUNA_MAX_PAGES = 5
