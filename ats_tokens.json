@@ -1,0 +1,48 @@
+{
+  "Stripe": {
+    "ats": "greenhouse",
+    "token": "stripe"
+  },
+  "Twilio": {
+    "ats": "greenhouse",
+    "token": "twilio"
+  },
+  "Intercom": {
+    "ats": "greenhouse",
+    "token": "intercom"
+  },
+  "Datadog": {
+    "ats": "greenhouse",
+    "token": "datadog"
+  },
+  "HubSpot": {
+    "ats": "greenhouse",
+    "token": "hubspot"
+  },
+  "Workhuman": null,
+  "Fenergo": null,
+  "Squarespace": {
+    "ats": "greenhouse",
+    "token": "squarespace"
+  },
+  "Udemy": {
+    "ats": "greenhouse",
+    "token": "udemy"
+  },
+  "Quantexa": {
+    "ats": "ashby",
+    "token": "quantexa"
+  },
+  "Canonical": {
+    "ats": "greenhouse",
+    "token": "canonical"
+  },
+  "Personio": null,
+  "Plain": {
+    "ats": "ashby",
+    "token": "plain"
+  },
+  "Holafly": null,
+  "Cofense": null,
+  "Bending Spoons": null
+}
