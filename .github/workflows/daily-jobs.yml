@@ -23,7 +23,7 @@ jobs:
       - name: Run monitor
         env:
           JOOBLE_API_KEY: ${{ secrets.JOOBLE_API_KEY }}
-          # APIFY_TOKEN:   ${{ secrets.APIFY_TOKEN }}   # uncomment when Apify layer is added
+          APIFY_TOKEN:    ${{ secrets.APIFY_TOKEN }}
         run: python pipeline.py
       - name: Commit results
         run: |

@@ -16,10 +16,13 @@ def iso(dt):
 def _norm(s):
     return re.sub(r"[^a-z0-9]+", " ", (s or "").lower()).strip()
 
-def dedup_key(company, title, location):
-    """Same job across sources collapses to one key (company|title|city)."""
-    city = (location or "").split(",")[0]
-    return f"{_norm(company)}|{_norm(title)}|{_norm(city)}"
+def dedup_key(company, title, location=""):
+    """Same job across sources collapses to one key (company|title).
+    Location is intentionally excluded: Jooble reports only \"Ireland\" while LinkedIn
+    reports the city, so keeping location would stop the same job matching across
+    sources and richest-record-wins could never fire. (location kept as an accepted
+    arg for call-site compatibility.)"""
+    return f"{_norm(company)}|{_norm(title)}"
 
 def record(**kw):
     """Build a record with every field present (missing -> '')."""

@@ -60,8 +60,14 @@ def write_digest(records, now):
         return (f"- **{r['title']}** — {r['company']} — {r['location']} "
                 f"({r['family']} / {r['accessibility']}, {r['age_hours']}h old{sal}{visa})\n"
                 f"  {r['url']}")
+    off = [r for r in records if r["stack_relevance"] == "Out-of-scope"]
+    summary = (f"{len(records)} new this run — "
+               f"{len(core_near)+len(other_core)} Core, {len(review)} to review, "
+               f"{len(off)} off-target (filtered out).")
+    if records and not (core_near or other_core or review):
+        summary += "  Nothing relevant for you this run."
     lines = [f"# Fresh data roles — {now.strftime('%Y-%m-%d %H:%M UTC')}",
-             f"\n_{len(records)} new role(s) this run._\n"]
+             f"\n_{summary}_\n"]
     lines.append(f"\n## ⭐ Core, entry/near ({len(core_near)})\n")
     lines += [line(r) for r in sorted(core_near, key=lambda x: x["created_utc"], reverse=True)] or ["_none_"]
     lines.append(f"\n## Other Core roles ({len(other_core)})\n")
