@@ -59,10 +59,16 @@ SEARCH_TERMS = [
     "machine learning engineer", "ai engineer", "business intelligence",
 ]
 
-# ---- ATS company boards (filled when the ATS layer is built & approved) ----
-GREENHOUSE_COMPANIES = []    # board tokens, e.g. "stripe"
-LEVER_COMPANIES = []
-ASHBY_COMPANIES = []
+# ---- ATS depth layer ----
+# Just company NAMES. The ats module auto-detects which of Greenhouse/Lever/Ashby
+# each one uses at runtime and caches the result in ats_tokens.json. Misses are
+# logged each run (some big names are on Workday/custom sites and won't resolve —
+# that's expected; they're covered by Jooble + LinkedIn instead). Add freely.
+ATS_COMPANIES = [
+    "Stripe", "Twilio", "Intercom", "Datadog", "HubSpot", "Workhuman", "Fenergo",
+    "Squarespace", "Udemy", "Quantexa", "Canonical", "Personio", "Plain",
+    "Holafly", "Cofense", "Bending Spoons",
+]
 
 # ---- richest-record-wins priority for cross-source de-duplication ----
 SOURCE_RICHNESS = {
