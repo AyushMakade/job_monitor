@@ -3,7 +3,7 @@
 # Which sources run. Only names with a built module in sources/ may appear here.
 # Roadmap (added one proven layer at a time): greenhouse, lever, ashby,
 # apify_linkedin, apify_indeed, and (off-by-default toggles) jooble, reed.
-ENABLED_SOURCES = ["jooble", "apify_linkedin"]   # backbone + LinkedIn (Adzuna has no Ireland API)
+ENABLED_SOURCES = ["jooble", "apify_linkedin", "ats"]   # backbone + LinkedIn (Adzuna has no Ireland API)
 
 # ---- freshness ----
 LOOKBACK_HOURS = 48          # steady-state window: each daily run looks back this many hours
